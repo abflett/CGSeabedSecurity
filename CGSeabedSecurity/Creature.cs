@@ -11,6 +11,9 @@
         public int Y { get; set; } = 0;
         public int Vx { get; set; } = 0;
         public int Vy { get; set; } = 0;
+
+        public int Nx { get; set; } = 0;
+        public int Ny { get; set; } = 0;
         public CreatureColor Color { get; set; }
         public CreatureType Type { get; set; }
 
@@ -37,6 +40,8 @@
             Y = y;
             Vx = vx;
             Vy = vy;
+            Nx = X + Vx;
+            Ny = Y + Vy;
         }
 
         public override string ToString()

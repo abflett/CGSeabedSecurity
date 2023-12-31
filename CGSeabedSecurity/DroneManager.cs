@@ -89,8 +89,49 @@ namespace CGSeabedSecurity
         {
             foreach (var drone in PlayerDrones)
             {
-                // MOVE <x> <y> <light (1|0)> | WAIT <light (1|0)>
-                drone.DroneAction = "WAIT 1";
+                foreach (var creature in _creatureManager.SubmittedPlayerCreatures)
+                {
+                    drone.ScannedCreatures.Remove(creature);
+                }
+
+
+                if (drone.IsLeft())
+                {
+                    drone.DroneAction = $"MOVE {2500} {8500} {1}";
+                }
+                else
+                {
+                    drone.DroneAction = $"MOVE {7500} {8500} {1}";
+                }
+
+                if (drone.ScannedCreatures.Count > 2)
+                {
+                    if (drone.IsLeft())
+                    {
+                        drone.DroneAction = $"MOVE {2500} {0} {1}";
+                    }
+                    else
+                    {
+                        drone.DroneAction = $"MOVE {7500} {0} {1}";
+                    }
+                }
+
+                foreach (var creature in _creatureManager.BadCreatures)
+                {
+                    int avoidanceDistance = 1500;
+                    var currentDistanceFromDrone = Util.CalculateDistance(drone.X, drone.Y, creature.X, creature.Y);
+
+                    // Check if the drone is too close to a bad creature
+                    if (currentDistanceFromDrone < 1000.00)
+                    {
+                        // Calculate a new position away from the bad creature
+                        int newX = drone.X + creature.Vx * -1 * avoidanceDistance;
+                        int newY = drone.Y + creature.Vy * -1 * avoidanceDistance;
+
+                        // Update the drone's position and action
+                        drone.DroneAction = $"MOVE {newX} {newY} {1} RUNNING AWAY!!!";
+                    }
+                }
             }
         }
 

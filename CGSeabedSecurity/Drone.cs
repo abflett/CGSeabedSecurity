@@ -35,7 +35,12 @@ namespace CGSeabedSecurity
             if (Emergency == 1)
             {
                 ScannedCreatures.Clear();
-                Console.Error.WriteLine("AAAAAAAA SCARY!!!!");
+                Console.Error.WriteLine("SCARY!!!!");
+            }
+
+            if (Y == 0)
+            {
+                ScannedCreatures.Clear();
             }
         }
 

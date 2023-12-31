@@ -4,8 +4,8 @@ namespace CGSeabedSecurity
 {
     public class Creature
     {
-        public enum CreatureColor { Pink, Yellow, Green, Blue };
-        public enum CreatureType { Cephalopod, Fish, Crustacean };
+        public enum CreatureColor { Red = -1, Pink, Yellow, Green, Blue };
+        public enum CreatureType { Monster = -1, Cephalopod, Fish, Crustacean };
         public int Id { get; set; } = 0;
         public int X { get; set; } = 0;
         public int Y { get; set; } = 0;

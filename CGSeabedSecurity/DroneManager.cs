@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CGSeabedSecurity
 {
@@ -63,6 +64,19 @@ namespace CGSeabedSecurity
                 int droneId = int.Parse(data[0]);
                 int creatureId = int.Parse(data[1]);
                 string radar = data[2];
+
+                var creature = _creatureManager.Creatures.Find(x => x.Id == creatureId);
+                var playerDrone = PlayerDrones.FirstOrDefault(x => x.Id == droneId);
+                var enemyDrone = EnemyDrones.FirstOrDefault(x => x.Id == droneId);
+
+                if (playerDrone != null)
+                {
+                    playerDrone.UpdateRadar(creature, radar);
+                }
+                else
+                {
+                    enemyDrone.UpdateRadar(creature, radar);
+                }
             }
         }
 
@@ -70,7 +84,12 @@ namespace CGSeabedSecurity
         {
             for (int i = 0; i < PlayerDrones.Count; i++)
             {
-                Console.WriteLine($"MOVE {5000} {5000} {1}");
+                PlayerDrones[i].Update(_creatureManager);
+            }
+
+            for (int i = 0; i < PlayerDrones.Count; i++)
+            {
+                Console.WriteLine(PlayerDrones[i].DroneAction);
             }
         }
     }

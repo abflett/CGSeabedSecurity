@@ -34,8 +34,10 @@ namespace CGSeabedSecurity
             int creatureId = data[0];
             int color = data[1];
             int type = data[2];
-            Creatures.Add(new Creature(creatureId, color, type));
-            PlayerAvailableCreatures.AddRange(Creatures);
+            var creature = new Creature(creatureId, color, type);
+
+            Creatures.Add(creature);
+            PlayerAvailableCreatures.Add(creature);
             EnemyAvailableCreatures.AddRange(Creatures);
         }
 

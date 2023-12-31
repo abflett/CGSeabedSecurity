@@ -2,7 +2,18 @@
 {
     public class Radar
     {
-        public int CreatureId { get; set; } = 0;
+        public Creature Creature { get; set; }
         public string Position { get; set; } = string.Empty;
+
+        public Radar(Creature creature, string position)
+        {
+            Creature = creature;
+            Position = position;
+        }
+
+        public override string ToString()
+        {
+            return $"CreatureId = {Creature.Id}, Position = {Position}";
+        }
     }
 }

@@ -15,49 +15,26 @@ namespace CGSeabedSecurity
             _droneManager = droneManager;
         }
 
-        private void ProcessGameLoop()
+        public void Run()
+        {
+            while (true)
+            {
+                ProcessData();
+                _droneManager.Update();
+                _droneManager.MakeActions();
+                Console.Error.WriteLine($"Player: {_playerScore}, Enemy: {_enemyScore}");
+            }
+        }
+
+        private void ProcessData()
         {
             _playerScore = Util.GetNumericValue();
             _enemyScore = Util.GetNumericValue();
             _creatureManager.ProcessScans();
             _droneManager.ProcessDrones();
-            _creatureManager.ProcessDroneScans(_droneManager);
+            _droneManager.ProcessDroneScans();
             _creatureManager.ProcessVisibleCreatures();
-
-            foreach (var creature in _creatureManager.Creatures)
-            {
-                Console.Error.WriteLine(creature.ToString());
-            }
-
             _droneManager.ProcessRadarBlips();
-
-            //foreach (var drone in _droneManager.PlayerDrones)
-            //{
-            //    Console.Error.WriteLine($"Player = DroneId: {drone.Id}, X: {drone.X}, Y: {drone.Y}");
-            //    foreach (var radar in drone.RadarList)
-            //    {
-            //        Console.Error.WriteLine($"CreatureId: {radar.Creature.Id}, Position: {radar.Position}");
-            //    }
-            //}
-
-            //foreach (var drone in _droneManager.EnemyDrones)
-            //{
-            //    Console.Error.WriteLine($"Enemy = DroneId: {drone.Id}, X: {drone.X}, Y: {drone.Y}");
-            //    foreach (var radar in drone.RadarList)
-            //    {
-            //        Console.Error.WriteLine($"CreatureId: {radar.Creature.Id}, Position: {radar.Position}");
-            //    }
-            //}
-
-            _droneManager.DroneActions();
-        }
-
-        public void Run()
-        {
-            while (true)
-            {
-                ProcessGameLoop();
-            }
         }
     }
 }

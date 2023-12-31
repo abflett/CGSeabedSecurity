@@ -16,7 +16,6 @@ namespace CGSeabedSecurity
 
         public static double CalculateDistance(int srcX, int srcY, int destX, int destY)
         {
-            // Simple Euclidean distance formula
             return Math.Sqrt(Math.Pow(destX - srcX, 2) + Math.Pow(destY - srcY, 2));
         }
     }

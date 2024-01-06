@@ -6,6 +6,7 @@ namespace CGSeabedSecurity
     {
         private readonly CreatureManager _creatureManager;
         private readonly DroneManager _droneManager;
+        private int _turn = 0;
         private int _playerScore = 0;
         private int _enemyScore = 0;
 
@@ -19,10 +20,13 @@ namespace CGSeabedSecurity
         {
             while (true)
             {
-                ProcessData();
-                _droneManager.Update();
-                _droneManager.MakeActions();
                 Console.Error.WriteLine($"Player: {_playerScore}, Enemy: {_enemyScore}");
+                Console.Error.WriteLine("Turn: " + _turn);
+                _turn++;
+                ProcessData();
+                _droneManager.Update(_turn);
+                _droneManager.MakeActions();
+
             }
         }
 
@@ -33,8 +37,9 @@ namespace CGSeabedSecurity
             _creatureManager.ProcessScans();
             _droneManager.ProcessDrones();
             _droneManager.ProcessDroneScans();
-            _creatureManager.ProcessVisibleCreatures();
+            _creatureManager.ProcessVisibleCreatures(_turn);
             _droneManager.ProcessRadarBlips();
+
         }
     }
 }

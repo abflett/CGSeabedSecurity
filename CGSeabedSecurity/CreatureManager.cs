@@ -41,11 +41,6 @@ namespace CGSeabedSecurity
             return badCreature;
         }
 
-        public Creature BadCreatureById(int id)
-        {
-            return BadCreatures.Find(x => x.Id == id);
-        }
-
         public void ProcessScans()
         {
             UpdateSubmittedCreatures(SubmittedPlayerCreatures);
@@ -66,14 +61,14 @@ namespace CGSeabedSecurity
             }
         }
 
-        public void ProcessVisibleCreatures()
+        public void ProcessVisibleCreatures(int turn)
         {
             int visibleCreatureCount = Util.GetNumericValue();
             for (int i = 0; i < visibleCreatureCount; i++)
             {
                 var data = Util.GetNumericValues();
                 var creature = CreatureById(data[0]);
-                creature.UpdateData(data[1], data[2], data[3], data[4]);
+                creature.UpdateData(data[1], data[2], data[3], data[4], turn);
             }
         }
     }

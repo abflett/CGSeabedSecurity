@@ -14,6 +14,7 @@
 
         public int Nx { get; set; } = 0;
         public int Ny { get; set; } = 0;
+        public int UpdatedTurn { get; set; } = 0;
         public CreatureColor Color { get; set; }
         public CreatureType Type { get; set; }
 
@@ -34,7 +35,7 @@
             return (CreatureType)type;
         }
 
-        public void UpdateData(int x, int y, int vx, int vy)
+        public void UpdateData(int x, int y, int vx, int vy, int turn)
         {
             X = x;
             Y = y;
@@ -42,11 +43,12 @@
             Vy = vy;
             Nx = X + Vx;
             Ny = Y + Vy;
+            UpdatedTurn = turn;
         }
 
         public override string ToString()
         {
-            return $"CreatureId={Id}, X={X}, Y={Y}, Vx={Vx}, Vy={Vy}, Color={Color}, Type={Type}";
+            return $"CreatureId={Id}, X={X}, Y={Y}, Vx={Vx}, Vy={Vy}, Color={Color}, Type={Type}, Turn={UpdatedTurn}";
         }
     }
 }

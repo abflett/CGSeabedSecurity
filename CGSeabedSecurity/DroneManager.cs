@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CGSeabedSecurity
 {
@@ -29,11 +30,11 @@ namespace CGSeabedSecurity
 
         public void ProcessDrones()
         {
-            UpdateDrones(PlayerDrones);
-            UpdateDrones(EnemyDrones);
+            UpdateDrones(PlayerDrones, true);
+            UpdateDrones(EnemyDrones, false);
         }
 
-        private static void UpdateDrones(List<Drone> drones)
+        private static void UpdateDrones(List<Drone> drones, bool playerDrone)
         {
             int droneCount = Util.GetNumericValue();
             for (int i = 0; i < droneCount; i++)
@@ -46,7 +47,7 @@ namespace CGSeabedSecurity
                 }
                 else
                 {
-                    drones.Add(new Drone(data[0], data[1], data[2], data[3], data[4]));
+                    drones.Add(new Drone(data[0], data[1], data[2], data[3], data[4], playerDrone));
                 }
             }
         }
@@ -77,60 +78,25 @@ namespace CGSeabedSecurity
             }
         }
 
-        public void DroneActions()
+        public void Update(int turn)
         {
-            for (int i = 0; i < PlayerDrones.Count; i++)
+            RemoveSubmittedCreaturesFromDroneScans();
+            foreach (var drone in PlayerDrones)
             {
-                Console.WriteLine(PlayerDrones[i].DroneAction);
+                drone.SetInitialDroneTarget();
+                var safetyDistance = 1200.00;
+                var monstersTooClose = _creatureManager.BadCreatures.Where(x => x.UpdatedTurn == turn && safetyDistance > Util.CalculateDistance(drone.X, drone.Y, x.X, x.Y)).ToList();
+                drone.SetSafeTarget(monstersTooClose);
             }
         }
 
-        public void Update()
+        private void RemoveSubmittedCreaturesFromDroneScans()
         {
             foreach (var drone in PlayerDrones)
             {
                 foreach (var creature in _creatureManager.SubmittedPlayerCreatures)
                 {
                     drone.ScannedCreatures.Remove(creature);
-                }
-
-
-                if (drone.IsLeft())
-                {
-                    drone.DroneAction = $"MOVE {2500} {8500} {1}";
-                }
-                else
-                {
-                    drone.DroneAction = $"MOVE {7500} {8500} {1}";
-                }
-
-                if (drone.ScannedCreatures.Count > 2)
-                {
-                    if (drone.IsLeft())
-                    {
-                        drone.DroneAction = $"MOVE {2500} {0} {1}";
-                    }
-                    else
-                    {
-                        drone.DroneAction = $"MOVE {7500} {0} {1}";
-                    }
-                }
-
-                foreach (var creature in _creatureManager.BadCreatures)
-                {
-                    int avoidanceDistance = 1500;
-                    var currentDistanceFromDrone = Util.CalculateDistance(drone.X, drone.Y, creature.X, creature.Y);
-
-                    // Check if the drone is too close to a bad creature
-                    if (currentDistanceFromDrone < 1000.00)
-                    {
-                        // Calculate a new position away from the bad creature
-                        int newX = drone.X + creature.Vx * -1 * avoidanceDistance;
-                        int newY = drone.Y + creature.Vy * -1 * avoidanceDistance;
-
-                        // Update the drone's position and action
-                        drone.DroneAction = $"MOVE {newX} {newY} {1} RUNNING AWAY!!!";
-                    }
                 }
             }
         }
@@ -139,7 +105,7 @@ namespace CGSeabedSecurity
         {
             foreach (var drone in PlayerDrones)
             {
-                Console.WriteLine(drone.DroneAction);
+                Console.WriteLine($"MOVE {drone.TargetX} {drone.TargetY} {drone.Light} {drone.Message}");
             }
         }
     }

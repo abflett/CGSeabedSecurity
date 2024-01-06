@@ -11,11 +11,20 @@ namespace CGSeabedSecurity
         public int Emergency { get; set; } = 0;
         public int Battery { get; set; } = 0;
         public int StartX { get; set; } = 0;
-        public string DroneAction { get; set; } = $"WAIT 1";
+        public bool PlayerDrone { get; set; } = false;
+
+        public int TargetX { get; set; } = 0;
+        public int TargetY { get; set; } = 0;
+        public int Light { get; set; } = 0;
+        public string Message { get; set; } = string.Empty;
+
+        public bool ShouldSurface { get; set; } = false;
+
         public List<Radar> RadarInfo { get; set; } = new();
         public List<Creature> ScannedCreatures { get; set; } = new();
 
-        public Drone(int id, int x, int y, int emergency, int battery)
+
+        public Drone(int id, int x, int y, int emergency, int battery, bool playerDrone)
         {
             Id = id;
             X = x;
@@ -23,6 +32,7 @@ namespace CGSeabedSecurity
             Emergency = emergency;
             Battery = battery;
             StartX = X;
+            PlayerDrone = playerDrone;
         }
 
         public void UpdateData(int x, int y, int emergency, int battery)
@@ -35,12 +45,20 @@ namespace CGSeabedSecurity
             if (Emergency == 1)
             {
                 ScannedCreatures.Clear();
-                Console.Error.WriteLine("SCARY!!!!");
+                Console.Error.WriteLine("MONSTER ATTACKED!");
             }
 
-            if (Y == 0)
+            if (Y == 0 && Emergency == 0)
             {
+                Console.Error.WriteLine("SUBMITTED SCANS!");
                 ScannedCreatures.Clear();
+                ShouldSurface = false;
+            }
+
+            if (Y > 8000)
+            {
+                Console.Error.WriteLine("SHOULD SURFACE!");
+                ShouldSurface = true;
             }
         }
 
@@ -71,9 +89,68 @@ namespace CGSeabedSecurity
             return X < 5000;
         }
 
+        public void SetInitialDroneTarget()
+        {
+            TargetY = 8500;
+            Light = 1;
+            Message = "SEARCHING!";
+            if (IsLeft())
+            {
+                TargetX = 2500;
+            }
+            else
+            {
+                TargetX = 7500;
+            }
+
+
+            if (ShouldSurface) // Surface if scanned more then 2 drones to submit scans.
+            {
+                TargetY = 0;
+                Message = "SURFACING!";
+            }
+        }
+
+        public void SetSafeTarget(List<Creature> monstersTooClose)
+        {
+            Console.Error.WriteLine(ToString());
+
+            foreach (Creature monster in monstersTooClose)
+            {
+                Console.Error.WriteLine(monster.ToString());
+
+                // dodge right
+                if (X < monster.Nx)
+                {
+                    TargetX = monster.Nx - 600;
+                    if (!ShouldSurface)
+                    {
+                        TargetY = Y + 600;
+                    }
+                    else
+                    {
+                        TargetY = Y - 600;
+                    }
+                }
+                else
+                {
+                    TargetX = monster.Nx + 600;
+                    if (!ShouldSurface)
+                    {
+                        TargetY = Y + 600;
+                    }
+                    else
+                    {
+                        TargetY = Y - 600;
+                    }
+                }
+                Message = "AVOIDING MONSTER!";
+            }
+        }
+
         public override string ToString()
         {
-            return $"Drone: Id={Id}, X={X}, Y={Y}, Emergency={Emergency}, Battery={Battery}";
+            return $"Drone: Surface={ShouldSurface} Id={Id}, X={X}, Y={Y}, Emergency={Emergency}, Battery={Battery}";
         }
     }
 }
